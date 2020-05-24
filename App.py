@@ -13,7 +13,7 @@ def setup_external_UIs():
 	ui.setupUi(station_widget)
 
 	settings_widget = QWidget()
-	ui = settings.Ui_Settings('Workstation')
+	ui = settings.Ui_Settings('')
 	ui.setupUi(settings_widget)
 
 	return station_widget,  settings_widget
