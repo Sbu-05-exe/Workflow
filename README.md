@@ -10,8 +10,8 @@ A simple app to automate daily desktop tasks
 
 ## Progress
 
-- Boilerplate :tick:
-- Ui :tick:
+- Boilerplate :heavy_check_mark:
+- Ui :heavy_check_mark:
 
 ## Todo 
 

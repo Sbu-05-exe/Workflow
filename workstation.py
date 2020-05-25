@@ -6,19 +6,16 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5.QtWidgets import QWidget
 
 class Ui_Workstation(object):
-    def setupUi(self, Workstation,text):
+    def setupUi(self, Workstation, text='Heading'):
         Workstation.setObjectName("Workstation")
         Workstation.resize(784, 564)
         font = QtGui.QFont()
         font.setFamily("Sitka Subheading")
-        font.setPointSize(26)
-        font.setBold(True)
-        font.setWeight(75)
+        font.setPointSize(16)
         Workstation.setFont(font)
         self.horizontalLayout = QtWidgets.QHBoxLayout(Workstation)
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -83,10 +80,12 @@ class Ui_Workstation(object):
         self.gridLayout_3.addWidget(self.lbl_head, 0, 1, 1, 2, QtCore.Qt.AlignHCenter)
         self.horizontalLayout.addWidget(self.main_frame)
 
-        self.retranslateUi(Workstation,text)
+        self.retranslateUi(Workstation, text)
+        self.ApplyFonts()
         QtCore.QMetaObject.connectSlotsByName(Workstation)
+        return self.btn_back
 
-    def retranslateUi(self, Workstation,text):
+    def retranslateUi(self, Workstation, text ='Heading'):
         _translate = QtCore.QCoreApplication.translate
         Workstation.setWindowTitle(_translate("Workstation", "Form"))
         self.lbl_settings.setText(_translate("Workstation", "Settings"))
@@ -96,6 +95,28 @@ class Ui_Workstation(object):
         self.lbl_web.setText(_translate("Workstation", "Websites"))
         self.btn_go_web.setText(_translate("Workstation", "Go"))
         self.lbl_head.setText(_translate("Workstation", text))
+
+    def ApplyFonts(self):
+        font = QtGui.QFont()
+        font.setPointSize(28)
+        font.setBold(True)
+        font.setWeight(500)
+        font.underline()
+        self.lbl_head.setFont(font)
+
+    def setFuncs(function_pack):
+        btn_back.click.connect(function_pack.render_menu)
+
+class App_Form(QWidget):
+    def __init__(self, text=''):
+        super().__init__()
+
+        self.ui = Ui_Workstation()
+        self.btn_back = self.ui.setupUi(self, text)
+
+    def set_function_pack(self, function_pack):
+        print(type(self.btn_back))
+        self.btn_back.clicked.connect(function_pack.render_menu)
 
 
 if __name__ == "__main__":

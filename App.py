@@ -5,49 +5,65 @@ from PyQt5.QtCore import Qt
 
 workspace = ['School','Writing','Coding']
 
+class render_funcs():
+	def __init__(self, function):
+		'''
+		 A class built to store functions passed down to widgets/forms 
+		 so they can navigate their way back to this central form
+		'''
+		self.function = function 
+		self.render_menu = None
+		self.render_workspace =  None
+		self.render_settings = None
 
-def setup_external_UIs():
+	def set_menu_func(self, widget):
+		self.render_menu = lambda: self.function(widget)
 
-	station_widget = QWidget()
-	ui = workstation.Ui_Workstation()
-	ui.setupUi(station_widget)
+	def set_workspace_func(self,widget):
+		self.render_workspace = lambda: self.function(widget)
+		# self.render_workspace()
 
-	settings_widget = QWidget()
-	ui = settings.Ui_Settings('')
-	ui.setupUi(settings_widget)
-
-	return station_widget,  settings_widget
+	def set_settings_func(self, widget):
+		self.render_settings = lambda: self.function(widget)
 
 class Button(QPushButton):
 	def __init__(self, text, parent):
 		super(Button,self).__init__(text)
 		self.text = text
+		self.clicked.connect(lambda: self.prep_widget(parent))
 
-		# Loophole of the century
-		self.clicked.connect(lambda: parent.switch(self.text,'workstation'))
+	def prep_widget(self, parent):
+		# setup the forms
+		station_widget = workstation.App_Form(self.text)
+		settings_widget = settings.App_Form(self.text)
+
+		# setup the setcentralwidget function for each widget 
+		function_pack = render_funcs(parent.render)
+		function_pack.set_menu_func(parent.main_frm)
+		function_pack.set_workspace_func(station_widget)
+		function_pack.set_settings_func(settings_widget)
+
+		station_widget.set_function_pack(function_pack)
+		settings_widget.set_function_pack(function_pack)
+
+		parent.setWindowTitle('Workspace - ' + self.text)
+
+		return function_pack.render_workspace()
 
 class Window(QMainWindow):
 	def __init__(self, *args, **kwargs):
 		super(Window,self).__init__(*args, **kwargs)
 
-		self.work_frm, self.set_frm = setup_external_UIs()
-
 		menu_frm = self.setMenu()
 		menu_frm.setStyleSheet(open('app.css').read())
 
 		self.menu_frm = menu_frm
+		self.workstation = None
+		self.settings = None
 
-		self.main_frm = menu_frm
-		self.setCentralWidget(self.main_frm)
-		self.show()
-		self.frames = {
-			'menu': self.menu_frm,
-			'workstation': self.work_frm,
-			'settings': self.set_frm
-		}
-
-	def change_frames(self, widget):
-		self.setCentralWidget(main_frm)
+		self.main_frm = self.menu_frm
+		self.render(self.main_frm)
+		self.showMaximized()
 
 	def setMenu(self):
 		frame = QWidget()
@@ -66,32 +82,28 @@ class Window(QMainWindow):
 				padding: 20px;
 			}
 			""")
-		add_btn.clicked.connect(lambda: self.check('it works'))
+		add_btn.clicked.connect(lambda: self.nothing('it works'))
 		vbox.addWidget(add_btn)
 		frame.setLayout(vbox)
 
 		return frame
 
-	def switch(self, text, frame):
-		my_widget = self.frames[frame]
-		print(self.frames[frame])
-		
-		self.main_frm = my_widget
-		self.setWindowTitle(text)
+	def render(self, widget):
+		self.main_frm = widget
 		self.setCentralWidget(self.main_frm)
 
-	def create_frms(frame):
-		form_settings = UiForm()
-		form_settings.setupUi(Form)
+	def set_workspace(widget):
+		self.workstation = widget
 
+	def set_settings(widget):
+		self.settings = settings
 
 def main():
 	myApp = QApplication(sys.argv)
 	myApp.setApplicationName('Workflow')
 
 	win = Window()
-	win.show()
-	
+	win.show()	
 	sys.exit(myApp.exec_())
 
 if __name__ == '__main__':

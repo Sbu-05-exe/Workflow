@@ -8,7 +8,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5.QtWidgets import QWidget
 
 class Ui_Settings(object):
     def setupUi(self, Settings):
@@ -164,6 +164,14 @@ class Ui_Settings(object):
         self.lbl_app.setText(_translate("Settings", "Programs"))
         self.btnHelp.setText(_translate("Settings", "Help"))
 
+class App_Form(QWidget):
+    def __init__(self, text):
+        super().__init__()
+        self.ui = Ui_Settings()
+        self.ui.setupUi(self)
+
+    def set_function_pack(self,function_pack):
+        return None
 
 if __name__ == "__main__":
     import sys
