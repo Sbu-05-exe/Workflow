@@ -170,7 +170,7 @@ class App_Form(QWidget):
         self.ui = Ui_Settings()
         self.ui.setupUi(self)
 
-    def set_function_pack(self,function_pack):
+    def set_fn_pack(self,function_pack):
         return None
 
 if __name__ == "__main__":

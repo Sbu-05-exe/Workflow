@@ -9,6 +9,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget
 
+applications = ['Brackets','Chrome','Firefox','Skype']
+
 class Ui_Workstation(object):
     def setupUi(self, Workstation, text='Heading'):
         Workstation.setObjectName("Workstation")
@@ -25,9 +27,9 @@ class Ui_Workstation(object):
         self.main_frame.setObjectName("main_frame")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.main_frame)
         self.gridLayout_3.setObjectName("gridLayout_3")
-        self.lbl_settings = QtWidgets.QPushButton(self.main_frame)
-        self.lbl_settings.setObjectName("lbl_settings")
-        self.gridLayout_3.addWidget(self.lbl_settings, 2, 2, 1, 1, QtCore.Qt.AlignRight)
+        self.btn_settings = QtWidgets.QPushButton(self.main_frame)
+        self.btn_settings.setObjectName("btn settings")
+        self.gridLayout_3.addWidget(self.btn_settings, 2, 2, 1, 1, QtCore.Qt.AlignRight)
         self.btn_back = QtWidgets.QPushButton(self.main_frame)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -83,12 +85,18 @@ class Ui_Workstation(object):
         self.retranslateUi(Workstation, text)
         self.ApplyFonts()
         QtCore.QMetaObject.connectSlotsByName(Workstation)
-        return self.btn_back
+        return self.btn_back, self.btn_settings
+
+    def get_Web_lst(self):
+        return self.lst_web
+
+    def get_App_lst(self):
+        return self.lst_app
 
     def retranslateUi(self, Workstation, text ='Heading'):
         _translate = QtCore.QCoreApplication.translate
         Workstation.setWindowTitle(_translate("Workstation", "Form"))
-        self.lbl_settings.setText(_translate("Workstation", "Settings"))
+        self.btn_settings.setText(_translate("Workstation", "Settings"))
         self.btn_back.setText(_translate("Workstation", "Back"))
         self.btn_go_app.setText(_translate("Workstation", "Go"))
         self.lbl_app.setText(_translate("Workstation", "Applications"))
@@ -106,18 +114,28 @@ class Ui_Workstation(object):
 
     def setFuncs(function_pack):
         btn_back.click.connect(function_pack.render_menu)
+        btn_settings.click.connect(function_pack.render_settings)
 
 class App_Form(QWidget):
     def __init__(self, text=''):
         super().__init__()
 
         self.ui = Ui_Workstation()
-        self.btn_back = self.ui.setupUi(self, text)
+        self.btn_back, self.btn_settings = self.ui.setupUi(self, text)
 
-    def set_function_pack(self, function_pack):
-        print(type(self.btn_back))
+        self.app_lst = self.ui.get_App_lst()
+        self.display()
+        
+    def display(self):
+        self.app_lst.addItems(applications)
+        self.app_lst.itemActivated.connect(show)
+
+    def set_fn_pack(self, function_pack):
         self.btn_back.clicked.connect(function_pack.render_menu)
+        self.btn_settings.clicked.connect(function_pack.render_settings)
 
+def show(item):
+    print(item.text())
 
 if __name__ == "__main__":
     import sys
