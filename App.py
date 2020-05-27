@@ -1,11 +1,31 @@
-import PyQt5, sys # Python files
-import menu , settings, workstation # App Files
+import PyQt5, sys, os # Python files
+import menu, settings, workstation # App Files
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSizePolicy
 from PyQt5.QtWidgets import QVBoxLayout, QGridLayout, QWidget, QLabel, QStackedWidget
 from PyQt5.QtCore import Qt
 
+# File Handling functions that are used amongs all modules!
+
+# Returns a list delimeted by a ',' in a file
+def check_file(file_name):
+	if os.path.isfile(file_name):
+		with open(file_name,'r') as f:
+			result = f.read().split(',')
+			# making sure to not return an empty string
+			return [item for item in result if item]
+
+	else:
+		return []
+
+# Saving contents of an list to a file 
+def save_file(file_name, lst):
+	s = ','.join(lst)
+	with open(file_name, 'w') as f:
+		f.write(s)
+
+
 # I dont really need this class anymore but it does make my code more self_explanatory
-# In other modules
+# when reading other modules so I'll keep it 
 
 class function_pack():
 	def __init__(self, function):

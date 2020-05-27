@@ -134,8 +134,6 @@ class App_Form(QWidget):
         self.btn_back.clicked.connect(function_pack.render_menu)
         self.btn_settings.clicked.connect(function_pack.render_settings)
 
-def show(item):
-    print(item.text())
 
 if __name__ == "__main__":
     import sys

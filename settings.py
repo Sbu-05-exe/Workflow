@@ -6,12 +6,20 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-
+import os
+import App
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QMessageBox
 
 class Ui_Settings(object):
     def setupUi(self, Settings):
+        # apps are the available apps the user has on their computer and
+        # app list are the apps the user would run in the current workspace
+        self.apps = App.check_file('apps.txt')
+        self.app_lst = []
+        self.webs = App.check_file('websites.txt')
+        print(self.apps, self.webs)
+
         Settings.setObjectName("Settings")
         Settings.resize(798, 648)
         font = QtGui.QFont()
@@ -30,13 +38,21 @@ class Ui_Settings(object):
         self.header_frm.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.header_frm.setFrameShadow(QtWidgets.QFrame.Raised)
         self.header_frm.setObjectName("header_frm")
-        self.gridLayout_3 = QtWidgets.QGridLayout(self.header_frm)
-        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.header_frm)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.btn_back = QtWidgets.QPushButton(self.header_frm)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.btn_back.sizePolicy().hasHeightForWidth())
+        self.btn_back.setSizePolicy(sizePolicy)
+        self.btn_back.setObjectName("btn_back")
+        self.horizontalLayout.addWidget(self.btn_back)
         self.lblHead = QtWidgets.QLabel(self.header_frm)
         self.lblHead.setAlignment(QtCore.Qt.AlignCenter)
         self.lblHead.setObjectName("lblHead")
-        self.gridLayout_3.addWidget(self.lblHead, 0, 0, 1, 1)
-        self.gridLayout_5.addWidget(self.header_frm, 0, 0, 1, 3)
+        self.horizontalLayout.addWidget(self.lblHead, 0, QtCore.Qt.AlignHCenter)
+        self.gridLayout_5.addWidget(self.header_frm, 0,0,1,3)
         self.web_frm = QtWidgets.QFrame(self.main_frm)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -57,24 +73,21 @@ class Ui_Settings(object):
         self.lblWeb = QtWidgets.QLabel(self.web_frm)
         self.lblWeb.setObjectName("lblWeb")
         self.gridLayout_2.addWidget(self.lblWeb, 0, 0, 2, 3, QtCore.Qt.AlignHCenter)
-        self.lstWeb = QtWidgets.QListView(self.web_frm)
+        self.lstWeb = QtWidgets.QListWidget(self.web_frm)
         self.lstWeb.setObjectName("lstWeb")
         self.gridLayout_2.addWidget(self.lstWeb, 5, 0, 1, 3)
-        self.textEdit_2 = QtWidgets.QTextEdit(self.web_frm)
+        self.edtUrl = QtWidgets.QLineEdit(self.web_frm)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.textEdit_2.sizePolicy().hasHeightForWidth())
-        self.textEdit_2.setSizePolicy(sizePolicy)
+        sizePolicy.setHeightForWidth(self.edtUrl.sizePolicy().hasHeightForWidth())
+        self.edtUrl.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setFamily("Sitka Subheading")
         font.setPointSize(13)
-        self.textEdit_2.setFont(font)
-        self.textEdit_2.viewport().setProperty("cursor", QtGui.QCursor(QtCore.Qt.IBeamCursor))
-        self.textEdit_2.setOverwriteMode(False)
-        self.textEdit_2.setAcceptRichText(True)
-        self.textEdit_2.setObjectName("textEdit_2")
-        self.gridLayout_2.addWidget(self.textEdit_2, 4, 1, 1, 1)
+        self.edtUrl.setFont(font)
+        self.edtUrl.setObjectName("edtUrl")
+        self.gridLayout_2.addWidget(self.edtUrl, 4, 1, 1, 1)
         self.btnRemove_web = QtWidgets.QPushButton(self.web_frm)
         self.btnRemove_web.setObjectName("btnRemove_web")
         self.gridLayout_2.addWidget(self.btnRemove_web, 5, 3, 1, 1, QtCore.Qt.AlignBottom)
@@ -97,7 +110,7 @@ class Ui_Settings(object):
         self.btnAdd_app = QtWidgets.QPushButton(self.app_frm)
         self.btnAdd_app.setObjectName("btnAdd_app")
         self.gridLayout_4.addWidget(self.btnAdd_app, 1, 2, 1, 1)
-        self.lstApp = QtWidgets.QListView(self.app_frm)
+        self.lstApp = QtWidgets.QListWidget(self.app_frm)
         self.lstApp.setObjectName("lstApp")
         self.gridLayout_4.addWidget(self.lstApp, 2, 0, 2, 2)
         self.lblApp = QtWidgets.QLabel(self.app_frm)
@@ -119,14 +132,14 @@ class Ui_Settings(object):
         self.lbl_app.setSizePolicy(sizePolicy)
         self.lbl_app.setObjectName("lbl_app")
         self.gridLayout_4.addWidget(self.lbl_app, 0, 0, 1, 3, QtCore.Qt.AlignHCenter)
-        self.comboBox = QtWidgets.QComboBox(self.app_frm)
+        self.cmbxApp = QtWidgets.QComboBox(self.app_frm)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.comboBox.sizePolicy().hasHeightForWidth())
-        self.comboBox.setSizePolicy(sizePolicy)
-        self.comboBox.setObjectName("comboBox")
-        self.gridLayout_4.addWidget(self.comboBox, 1, 1, 1, 1)
+        sizePolicy.setHeightForWidth(self.cmbxApp.sizePolicy().hasHeightForWidth())
+        self.cmbxApp.setSizePolicy(sizePolicy)
+        self.cmbxApp.setObjectName("cmbxApp")
+        self.gridLayout_4.addWidget(self.cmbxApp, 1, 1, 1, 1)
         self.gridLayout_5.addWidget(self.app_frm, 1, 2, 1, 1)
         self.btnOptions = QtWidgets.QFrame(self.main_frm)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
@@ -146,16 +159,26 @@ class Ui_Settings(object):
         self.gridLayout.addWidget(self.main_frm, 0, 0, 1, 1)
 
         self.retranslateUi(Settings)
+        self.setupSignals()
         QtCore.QMetaObject.connectSlotsByName(Settings)
+
+        return self.btn_back
+
+    def get_Applications(self):
+        return self.apps
+
+    def get_Websites(self):
+        return self.webs
 
     def retranslateUi(self, Settings):
         _translate = QtCore.QCoreApplication.translate
         Settings.setWindowTitle(_translate("Settings", "Form"))
+        self.btn_back.setText(_translate("Settings", "Back"))
         self.lblHead.setText(_translate("Settings", "Settings"))
         self.label.setText(_translate("Settings", "url:"))
         self.btnAdd_url.setText(_translate("Settings", "Add"))
         self.lblWeb.setText(_translate("Settings", "Website"))
-        self.textEdit_2.setPlaceholderText(_translate("Settings", "http://google.com"))
+        self.edtUrl.setPlaceholderText(_translate("Settings", "http://google.com"))
         self.btnRemove_web.setText(_translate("Settings", "Remove"))
         self.btnFind.setText(_translate("Settings", "Find"))
         self.btnAdd_app.setText(_translate("Settings", "Add"))
@@ -163,21 +186,111 @@ class Ui_Settings(object):
         self.btnRemove_app.setText(_translate("Settings", "Remove"))
         self.lbl_app.setText(_translate("Settings", "Programs"))
         self.btnHelp.setText(_translate("Settings", "Help"))
+    
+    def setupSignals(self):
+        # setup the cmbx, lstWeb and lstApp
+        self.cmbxApp.addItems(self.apps)
+        self.lstApp.addItems(self.app_lst)
+        self.lstWeb.addItems(self.webs)
+
+        # Disable remove buttons as they nothing is selected
+        self.btnRemove_app.setEnabled(False)
+        self.btnRemove_web.setEnabled(False)
+
+        # Enabled buttons when they are 
+        self.lstWeb.itemActivated.connect(lambda: self.btnRemove_web.setEnabled(True))
+        self.lstApp.itemActivated.connect(lambda: self.btnRemove_app.setEnabled(True))
+
+        # setup btn removal of application/websites
+        self.btnRemove_web.clicked.connect(self.remove_url)
+        self.btnRemove_app.clicked.connect(self.remove_app)
+
+        # setup addition of application/websites 
+        self.btnAdd_url.clicked.connect(self.Add_url)
+        self.btnAdd_app.clicked.connect(self.Add_app)
+
+        # display help
+        self.btnHelp.clicked.connect(self.show_help)
+
+    def show_help(self):
+        mssg = QMessageBox()
+        mssg.setWindowTitle('How to add Applicatons')
+        mssg.setText('Click on find to look for applications in your systems to add to list of available application option')
+        mssg.setIcon(QMessageBox.Information)
+        mssg.setStandardButtons(QMessageBox.Ok)
+
+        value = mssg.exec_() 
+
+    def Add_url(self):
+        url = self.edtUrl.text()
+        self.edtUrl.clear()
+        self.lstWeb.clear()
+        self.webs.append(url)
+        self.lstWeb.addItems(self.webs)
+
+    def Add_app(self):
+        if self.cmbxApp.count():
+            app = self.cmbxApp.currentText()
+            self.apps.remove(app)
+            self.cmbxApp.clear()
+            self.cmbxApp.addItems(self.apps)
+
+            self.app_lst.append(app)
+            self.lstApp.addItem(app)
+
+    def remove_url(self):
+        self.webs = []
+        for i in range(self.lstWeb.count()):
+            li = self.lstWeb.item(i)
+            if not(li.isSelected()):
+                self.webs.append(li.text())
+
+        self.lstWeb.clear()
+        self.lstWeb.addItems(self.webs)
+
+    def remove_app(self):
+        for i in range(self.lstApp.count()):
+            li = self.lstApp.item(i)
+
+            if li.isSelected():
+                app = li.text()
+                self.cmbxApp.addItem(app)
+                self.apps.append(app)
+                self.app_lst.remove(app)
+
+        self.lstApp.clear()
+        self.lstApp.addItems(self.app_lst)
 
 class App_Form(QWidget):
     def __init__(self, text):
         super().__init__()
         self.ui = Ui_Settings()
-        self.ui.setupUi(self)
+        self.btn_back = self.ui.setupUi(self)
+        self.fn_pack = []
 
-    def set_fn_pack(self,function_pack):
-        return None
+    def set_fn_pack(self,fn_pack):
+        self.fn_pack = fn_pack
+        self.btn_back.clicked.connect(self.closeEvent)
+
+    def closeEvent(self, event):
+
+        self.save_and_exit()
+
+        if event:
+            event.accept()
+
+    def save_and_exit(self):
+        # all the save code
+        apps = self.ui.get_Applications()
+        webs = self.ui.get_Websites()
+
+        App.save_file('apps.txt', apps)
+        App.save_file('websites.txt', webs)
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Settings = QtWidgets.QWidget()
-    ui = Ui_Settings()
-    ui.setupUi(Settings)
-    Settings.show()
+    settings = App_Form('Todo. Implement settings for multiple workspaces')
+    settings.set_fn_pack('psych')
+    settings.show()
     sys.exit(app.exec_())
