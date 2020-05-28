@@ -4,10 +4,33 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSizePolicy
 from PyQt5.QtWidgets import QVBoxLayout, QGridLayout, QWidget, QLabel, QStackedWidget
 from PyQt5.QtCore import Qt
 
-# File Handling functions that are used amongs all modules!
+'''
+====================================================================================
+							Utility Functions and classes
+====================================================================================
+'''
 
-# Returns a list delimeted by a ',' in a file
+def chop(s):
+	index = 0
+	while index >= 0:
+		index = s.find('/')
+		s = s[(index+1):]
+
+	return s
+
+def morph_filename(s):
+	# A function that makes file_handling more legible for the user
+	file_dir = s
+	chop(s)
+
+	result = {
+		'name': s,
+		'dir': file_dir
+	}
+	return result
+
 def check_file(file_name):
+	# Returns a list delimeted by a ',' in a file
 	if os.path.isfile(file_name):
 		with open(file_name,'r') as f:
 			result = f.read().split(',')
@@ -17,17 +40,17 @@ def check_file(file_name):
 	else:
 		return []
 
-# Saving contents of an list to a file 
 def save_file(file_name, lst):
+	# Saving contents of an list to a file 
 	s = ','.join(lst)
 	with open(file_name, 'w') as f:
 		f.write(s)
 
 
-# I dont really need this class anymore but it does make my code more self_explanatory
-# when reading other modules so I'll keep it 
 
 class function_pack():
+	# I dont really need this class anymore but it does make my code more self_explanatory
+	# when reading other modules so I'll keep it 
 	def __init__(self, function):
 		'''
 		 A class built to store functions passed down to widgets/forms 
@@ -37,6 +60,12 @@ class function_pack():
 		self.render_menu = lambda: self.function(0)
 		self.render_workspace =  lambda: self.function(1)
 		self.render_settings = lambda: self.function(2)
+
+'''
+=================================================================================
+									The Actual File
+=================================================================================
+'''
 
 class Window(QMainWindow):
 	def __init__(self, *args, **kwargs):

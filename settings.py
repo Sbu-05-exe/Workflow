@@ -9,16 +9,19 @@
 import os
 import App
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QWidget, QMessageBox
+from PyQt5.QtWidgets import QWidget, QMessageBox, QFileDialog
+from PyQt5.QtGui import QIcon
 
 class Ui_Settings(object):
     def setupUi(self, Settings):
         # apps are the available apps the user has on their computer and
         # app list are the apps the user would run in the current workspace
-        self.apps = App.check_file('apps.txt')
-        self.app_lst = []
+        self.apps = App.check_file('exe.txt')
+        self.app_lst = App.check_file('apps.txt')
+        self.apps = [app for app in self.apps if not(app in self.app_lst)]
         self.webs = App.check_file('websites.txt')
-        print(self.apps, self.webs)
+
+        mylist = [App.abbreviate_fileName(item) for item in myList]
 
         Settings.setObjectName("Settings")
         Settings.resize(798, 648)
@@ -93,7 +96,7 @@ class Ui_Settings(object):
         self.gridLayout_2.addWidget(self.btnRemove_web, 5, 3, 1, 1, QtCore.Qt.AlignBottom)
         self.gridLayout_5.addWidget(self.web_frm, 1, 1, 1, 1)
         self.app_frm = QtWidgets.QFrame(self.main_frm)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.app_frm.sizePolicy().hasHeightForWidth())
@@ -165,7 +168,7 @@ class Ui_Settings(object):
         return self.btn_back
 
     def get_Applications(self):
-        return self.apps
+        return self.apps + self.app_lst, self.app_lst
 
     def get_Websites(self):
         return self.webs
@@ -211,6 +214,9 @@ class Ui_Settings(object):
 
         # display help
         self.btnHelp.clicked.connect(self.show_help)
+
+        # look for more applications on system
+        self.btnFind.clicked.connect(self.find_apps)
 
     def show_help(self):
         mssg = QMessageBox()
@@ -261,6 +267,20 @@ class Ui_Settings(object):
         self.lstApp.clear()
         self.lstApp.addItems(self.app_lst)
 
+    def find_apps(self):
+        filename = QFileDialog.getOpenFileName(self.main_frm, 'Select executable File', '/', 'executables(*.exe)')[0]
+        
+        # Don't add exetubles that already exists between the two lists
+        if not(app in self.apps or app in self.app_lst):
+            self.apps.append(filename)
+            self.cmbxApp.addItems(self.apps) 
+            App.save_file('exe.txt', self.apps)
+
+        else:
+            pass
+            # A pop notification to say that the app is already available in the combox
+
+
 class App_Form(QWidget):
     def __init__(self, text):
         super().__init__()
@@ -281,10 +301,12 @@ class App_Form(QWidget):
 
     def save_and_exit(self):
         # all the save code
-        apps = self.ui.get_Applications()
+        apps, app_lst = self.ui.get_Applications()
+        print(app_lst)
         webs = self.ui.get_Websites()
 
-        App.save_file('apps.txt', apps)
+        App.save_file('exe.txt', apps)
+        App.save_file('apps.txt', app_lst)
         App.save_file('websites.txt', webs)
 
 if __name__ == "__main__":
