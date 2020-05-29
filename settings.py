@@ -270,7 +270,7 @@ class Ui_Settings(object):
         filename = QFileDialog.getOpenFileName(self.main_frm, 'Select executable File', '/', 'executables(*.exe)')[0]
         
         # Don't add exetubles that already exists between the two lists
-        if not(app in self.apps or app in self.app_lst):
+        if not((filename in self.apps) or (filename in self.app_lst)):
             self.apps.append(filename)
             self.cmbxApp.addItems(self.apps) 
             App.save_file('exe.txt', self.apps)

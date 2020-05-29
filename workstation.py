@@ -7,6 +7,8 @@
 # WARNING! All changes made in this file will be lost!
 
 import App
+from os import startfile
+from selenium import webdriver
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget
 
@@ -92,6 +94,12 @@ class Ui_Workstation(object):
     def get_App_lst(self):
         return self.lst_app
 
+    def get_webs(self):
+        return [self.lst_web.item(i).text() for i in range(self.lst_web.count())]
+
+    def get_apps(self):
+        return [self.lst_app.item(i).text() for i in range(self.lst_app.count())]
+
     def retranslateUi(self, Workstation, text ='Heading'):
         _translate = QtCore.QCoreApplication.translate
         Workstation.setWindowTitle(_translate("Workstation", "Form"))
@@ -102,6 +110,7 @@ class Ui_Workstation(object):
         self.lbl_web.setText(_translate("Workstation", "Websites"))
         self.btn_go_web.setText(_translate("Workstation", "Go"))
         self.lbl_head.setText(_translate("Workstation", text))
+        self.setupSignals()
 
     def ApplyFonts(self):
         font = QtGui.QFont()
@@ -111,9 +120,28 @@ class Ui_Workstation(object):
         font.underline()
         self.lbl_head.setFont(font)
 
-    def setFuncs(function_pack):
-        btn_back.click.connect(function_pack.render_menu)
-        btn_settings.click.connect(function_pack.render_settings)
+    def setupSignals(self):
+        self.btn_go_app.clicked.connect(self.open_apps)
+        self.btn_go_web.clicked.connect(self.surf_webs)
+
+    def open_apps(self):
+
+        applications = self.get_apps()
+
+        for app in applications:
+            startfile(app)
+
+    def surf_webs(self):
+        driver = webdriver.Firefox(executable_path='C:/Users/itsbu/Desktop/Webdrivers/geckodriver1.exe')
+        
+        websites = self.get_webs()
+        for site in websites:
+            driver.get(site)
+            driver.findElement(By.cssSelector('Body')).sendKeys(KEYS.CONTROL+'t')
+
+
+
+
 
 class App_Form(QWidget):
     def __init__(self, text=''):
