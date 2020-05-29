@@ -10,7 +10,7 @@ import os
 import App
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget, QMessageBox, QFileDialog
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon 
 
 class Ui_Settings(object):
     def setupUi(self, Settings):
@@ -18,10 +18,9 @@ class Ui_Settings(object):
         # app list are the apps the user would run in the current workspace
         self.apps = App.check_file('exe.txt')
         self.app_lst = App.check_file('apps.txt')
+
         self.apps = [app for app in self.apps if not(app in self.app_lst)]
         self.webs = App.check_file('websites.txt')
-
-        mylist = [App.abbreviate_fileName(item) for item in myList]
 
         Settings.setObjectName("Settings")
         Settings.resize(798, 648)
@@ -243,7 +242,7 @@ class Ui_Settings(object):
 
             self.app_lst.append(app)
             self.lstApp.addItem(app)
-
+    
     def remove_url(self):
         self.webs = []
         for i in range(self.lstWeb.count()):
@@ -298,11 +297,12 @@ class App_Form(QWidget):
 
         if event:
             event.accept()
+        else:
+            self.fn_pack.render_menu
 
     def save_and_exit(self):
         # all the save code
         apps, app_lst = self.ui.get_Applications()
-        print(app_lst)
         webs = self.ui.get_Websites()
 
         App.save_file('exe.txt', apps)

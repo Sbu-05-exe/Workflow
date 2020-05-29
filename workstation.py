@@ -6,6 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+import App
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget
 
@@ -123,12 +124,14 @@ class App_Form(QWidget):
         self.ui = Ui_Workstation()
         self.btn_back, self.btn_settings = self.ui.setupUi(self, text)
 
-        self.app_lst = self.ui.get_App_lst()
+        self.app_lst= self.ui.get_App_lst()
+        self.web_lst = self.ui.get_Web_lst()
         self.display()
         
     def display(self):
-        self.app_lst.addItems(applications)
-        self.app_lst.itemActivated.connect(show)
+        self.app_lst.addItems(App.check_file('apps.txt'))
+        self.web_lst.addItems(App.check_file('websites.txt'))
+        # self.app_lst.itemActivated.connect(show)
 
     def set_fn_pack(self, function_pack):
         self.btn_back.clicked.connect(function_pack.render_menu)

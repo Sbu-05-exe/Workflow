@@ -9,8 +9,8 @@ from PyQt5.QtCore import Qt
 							Utility Functions and classes
 ====================================================================================
 '''
-
 def chop(s):
+	# retrieves the name of the file in a filedirectory
 	index = 0
 	while index >= 0:
 		index = s.find('/')
@@ -18,16 +18,6 @@ def chop(s):
 
 	return s
 
-def morph_filename(s):
-	# A function that makes file_handling more legible for the user
-	file_dir = s
-	chop(s)
-
-	result = {
-		'name': s,
-		'dir': file_dir
-	}
-	return result
 
 def check_file(file_name):
 	# Returns a list delimeted by a ',' in a file
@@ -46,7 +36,13 @@ def save_file(file_name, lst):
 	with open(file_name, 'w') as f:
 		f.write(s)
 
+class file():
+	def __str__(self):
+		return self.directory
 
+	def __init__(self, filename):
+		self.directory = filename
+		self.name = chop(filename)
 
 class function_pack():
 	# I dont really need this class anymore but it does make my code more self_explanatory
