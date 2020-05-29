@@ -8,18 +8,20 @@ A simple app to automate daily desktop tasks
 - PyQt5
 - Sys
 
-## Progress
+## Progress :heave_check_mark:
 
-- Boilerplate :heavy_check_mark:
-- Ui :heavy_check_mark:
+- Created Boilerplate
+- Designed Ui with Qtdesigner 
+- Completed the settings form
+- Completed the workspace/workstation form
+- Binded events to relevant buttons on all forms
 
 ## Todo 
 
-- Bind all events to relevant buttons on external forms
-- Add stylesheet to external forms
-- Complete workstation Form
-- Complete settings Form
-
+- Create a MySQL database
+- Connect the database
+- Enable CRUD operations functionality
+- Style up the GUI with Qcss
 
 # Pre-requisites
 
