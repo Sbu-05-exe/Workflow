@@ -10,8 +10,6 @@ import App
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget
 
-applications = ['Brackets','Chrome','Firefox','Skype']
-
 class Ui_Workstation(object):
     def setupUi(self, Workstation, text='Heading'):
         Workstation.setObjectName("Workstation")
@@ -121,22 +119,23 @@ class App_Form(QWidget):
     def __init__(self, text=''):
         super().__init__()
 
+        self.fn_pack = None
         self.ui = Ui_Workstation()
         self.btn_back, self.btn_settings = self.ui.setupUi(self, text)
 
         self.app_lst= self.ui.get_App_lst()
         self.web_lst = self.ui.get_Web_lst()
-        self.display()
         
     def display(self):
+        self.app_lst.clear()
+        self.web_lst.clear()
         self.app_lst.addItems(App.check_file('apps.txt'))
         self.web_lst.addItems(App.check_file('websites.txt'))
-        # self.app_lst.itemActivated.connect(show)
 
-    def set_fn_pack(self, function_pack):
-        self.btn_back.clicked.connect(function_pack.render_menu)
-        self.btn_settings.clicked.connect(function_pack.render_settings)
-
+    def set_fn_pack(self, fn_pack):
+        self.fn_pack = fn_pack
+        self.btn_back.clicked.connect(fn_pack.render_menu)
+        self.btn_settings.clicked.connect(fn_pack.render_settings)
 
 if __name__ == "__main__":
     import sys

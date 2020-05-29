@@ -71,7 +71,7 @@ class Window(QMainWindow):
 		menu_frm = menu.MenuWidget(self.prep_widgets)
 
 		self.menu_frm = menu_frm
-		self.workstation = None
+		self.workspace = None
 		self.settings = None
 
 		self.Stack.addWidget(menu_frm)
@@ -92,15 +92,26 @@ class Window(QMainWindow):
 		workspace_widget.set_fn_pack(fn_pack)
 		settings_widget.set_fn_pack(fn_pack)
 
+		self.set_workspace(workspace_widget)
+		self.set_settings(settings_widget)
+
 		fn_pack.render_workspace()
 
 	def render(self, i=0):
 		self.Stack.setCurrentIndex(i)
 
-	def set_workspace(widget):	
-		self.workstation = widget
+		# if we are switching to the workspace
+		# refresh the workspace widget
+		if i == 1:
+			self.workspace.display()
 
-	def set_settings(widget):
+
+
+
+	def set_workspace(self, widget):	
+		self.workspace = widget
+
+	def set_settings(self, widget):
 		self.settings = settings
 
 def main():

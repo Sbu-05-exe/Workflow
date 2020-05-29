@@ -298,7 +298,7 @@ class App_Form(QWidget):
         if event:
             event.accept()
         else:
-            self.fn_pack.render_menu
+            self.fn_pack.render_workspace()
 
     def save_and_exit(self):
         # all the save code
