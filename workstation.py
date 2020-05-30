@@ -6,9 +6,9 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-import App
+import App, webbrowser
 from os import startfile
-from selenium import webdriver
+from webbrowser import Mozilla, Chrome
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget
 
@@ -132,16 +132,12 @@ class Ui_Workstation(object):
             startfile(app)
 
     def surf_webs(self):
-        driver = webdriver.Firefox(executable_path='C:/Users/itsbu/Desktop/Webdrivers/geckodriver1.exe')
-        
+        firefox = Mozilla('mozilla')
+        webbrowser.register('firefox', Mozilla, firefox, True)
+
         websites = self.get_webs()
-        for site in websites:
-            driver.get(site)
-            driver.findElement(By.cssSelector('Body')).sendKeys(KEYS.CONTROL+'t')
-
-
-
-
+        for url in websites:
+            webbrowser.open(url)
 
 class App_Form(QWidget):
     def __init__(self, text=''):
