@@ -1,23 +1,26 @@
 import sys
+from controller import get_workspaces, insert_new_workspace
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSizePolicy
 from PyQt5.QtWidgets import QVBoxLayout, QGridLayout, QWidget, QLabel, QInputDialog
 
-workspace = ['School','Coding','Blog','Project X']
+# workspace = ['School','Coding','Blog','Project X']
+
 class Button(QPushButton):
 	def __init__(self, text):
 		super().__init__(text)
 		self.text = text
 
 class MenuWidget(QWidget):
-	def __init__(self, parent_function):
+	def __init__(self, parent_function=None):
 		super().__init__()
+		self.workspace = get_workspaces()
 		self.layout = self.initUI()
 		self.render_workstation = parent_function
 
 	def initUI(self):
 		vbox = QVBoxLayout()
 
-		for work in workspace:
+		for work in self.workspace:
 			self.Add_Workspace(work, vbox)
 
 		add_btn = QPushButton('+')
@@ -49,15 +52,11 @@ class MenuWidget(QWidget):
 		btn_add = self.layout.itemAt(i-1).widget()
 		btn_add.setParent(None)
 
-		self.Add_Workspace(workspace[-1], self.layout)
+		# Add an additional workspace button
+		self.Add_Workspace(self.workspace[-1], self.layout)
 
+		# Readd btn_ad
 		self.layout.addWidget(btn_add)
-
-
-
-
-
-
 
 	def buttonClicked(self):
 		sender = self.sender()
@@ -67,7 +66,9 @@ class MenuWidget(QWidget):
 	def addCategory(self):
 		text, ok = QInputDialog.getText(self,'Entry','Enter name of workspace: ',)
 		if (ok and text):
-			workspace.append(text)
+			self.workspace.append(text)
+			# Update the database
+			insert_new_workspace(text)
 			self.render_layout()
 
 def main():
