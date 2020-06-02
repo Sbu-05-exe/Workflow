@@ -7,20 +7,27 @@
 # WARNING! All changes made in this file will be lost!
 
 import os
-import App
+import controller
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QWidget, QMessageBox, QFileDialog
 from PyQt5.QtGui import QIcon 
+from PyQt5.QtWidgets import QWidget, QMessageBox, QFileDialog
 
 class Ui_Settings(object):
+   
     def setupUi(self, Settings):
         # apps are the available apps the user has on their computer and
         # app list are the apps the user would run in the current workspace
-        self.apps = App.check_file('exe.txt')
-        self.app_lst = App.check_file('apps.txt')
+        self.workspace = controller.TbWorkspace.get_active_workspace()
+    
+        self.apps = controller.TbWebApps.get_apps()
+        self.app_lst = controller.TbWorkAppSite.get_apps(self.workspace.id)
+        
+        # Have to filter out the apps from the app_lst so that there are no duplicates
+        # In combobox and the list Widget
+        appnames = [record.name for record in self.app_lst]
+        self.apps = [record for record in self.apps if not(record.name in appnames)]
 
-        self.apps = [app for app in self.apps if not(app in self.app_lst)]
-        self.webs = App.check_file('websites.txt')
+        self.webs = controller.TbWorkAppSite.get_webs(self.workspace.id)
 
         Settings.setObjectName("Settings")
         Settings.resize(798, 648)
@@ -42,14 +49,14 @@ class Ui_Settings(object):
         self.header_frm.setObjectName("header_frm")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.header_frm)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.btn_back = QtWidgets.QPushButton(self.header_frm)
+        self.btnBack = QtWidgets.QPushButton(self.header_frm)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btn_back.sizePolicy().hasHeightForWidth())
-        self.btn_back.setSizePolicy(sizePolicy)
-        self.btn_back.setObjectName("btn_back")
-        self.horizontalLayout.addWidget(self.btn_back)
+        sizePolicy.setHeightForWidth(self.btnBack.sizePolicy().hasHeightForWidth())
+        self.btnBack.setSizePolicy(sizePolicy)
+        self.btnBack.setObjectName("btnBack")
+        self.horizontalLayout.addWidget(self.btnBack)
         self.lblHead = QtWidgets.QLabel(self.header_frm)
         self.lblHead.setAlignment(QtCore.Qt.AlignCenter)
         self.lblHead.setObjectName("lblHead")
@@ -108,7 +115,7 @@ class Ui_Settings(object):
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.btnFind = QtWidgets.QPushButton(self.app_frm)
         self.btnFind.setObjectName("btnFind")
-        self.gridLayout_4.addWidget(self.btnFind, 3, 2, 1, 1, QtCore.Qt.AlignBottom)
+        self.gridLayout_4.addWidget(self.btnFind, 2, 2, 1, 1, QtCore.Qt.AlignTop)
         self.btnAdd_app = QtWidgets.QPushButton(self.app_frm)
         self.btnAdd_app.setObjectName("btnAdd_app")
         self.gridLayout_4.addWidget(self.btnAdd_app, 1, 2, 1, 1)
@@ -125,7 +132,7 @@ class Ui_Settings(object):
         self.gridLayout_4.addWidget(self.lblApp, 1, 0, 1, 1)
         self.btnRemove_app = QtWidgets.QPushButton(self.app_frm)
         self.btnRemove_app.setObjectName("btnRemove_app")
-        self.gridLayout_4.addWidget(self.btnRemove_app, 2, 2, 1, 1, QtCore.Qt.AlignTop)
+        self.gridLayout_4.addWidget(self.btnRemove_app, 3, 2, 1, 1, QtCore.Qt.AlignBottom)
         self.lbl_app = QtWidgets.QLabel(self.app_frm)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -143,28 +150,33 @@ class Ui_Settings(object):
         self.cmbxApp.setObjectName("cmbxApp")
         self.gridLayout_4.addWidget(self.cmbxApp, 1, 1, 1, 1)
         self.gridLayout_5.addWidget(self.app_frm, 1, 2, 1, 1)
-        self.btnOptions = QtWidgets.QFrame(self.main_frm)
+        self.btn_frm = QtWidgets.QFrame(self.main_frm)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btnOptions.sizePolicy().hasHeightForWidth())
-        self.btnOptions.setSizePolicy(sizePolicy)
-        self.btnOptions.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.btnOptions.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.btnOptions.setObjectName("btnOptions")
-        self.gridLayout_6 = QtWidgets.QGridLayout(self.btnOptions)
-        self.gridLayout_6.setObjectName("gridLayout_6")
-        self.btnHelp = QtWidgets.QPushButton(self.btnOptions)
+        sizePolicy.setHeightForWidth(self.btn_frm.sizePolicy().hasHeightForWidth())
+        self.btn_frm.setSizePolicy(sizePolicy)
+        self.btn_frm.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.btn_frm.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.btn_frm.setObjectName("btnDelete")
+        self.Hbox_btn_frm = QtWidgets.QHBoxLayout(self.btn_frm)
+        self.Hbox_btn_frm.setObjectName("Hbox_btn_frm")
+        # spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        # self.Hbox_btn_frm.addItem(spacerItem)
+        self.btnDelete = QtWidgets.QPushButton(self.btn_frm)
+        self.btnDelete.setObjectName('btnDelete')
+        self.Hbox_btn_frm.addWidget(self.btnDelete, 0,QtCore.Qt.AlignLeft)
+        self.btnHelp = QtWidgets.QPushButton(self.btn_frm)
         self.btnHelp.setObjectName("btnHelp")
-        self.gridLayout_6.addWidget(self.btnHelp, 0, 0, 1, 1, QtCore.Qt.AlignRight|QtCore.Qt.AlignBottom)
-        self.gridLayout_5.addWidget(self.btnOptions, 2, 0, 1, 3)
+        self.Hbox_btn_frm.addWidget(self.btnHelp,0, QtCore.Qt.AlignRight)
+        self.gridLayout_5.addWidget(self.btn_frm, 2, 0, 1, 3)
         self.gridLayout.addWidget(self.main_frm, 0, 0, 1, 1)
 
         self.retranslateUi(Settings)
         self.setupSignals()
         QtCore.QMetaObject.connectSlotsByName(Settings)
 
-        return self.btn_back
+        return self.btnBack, self.btnDelete
 
     def get_Applications(self):
         return self.apps + self.app_lst, self.app_lst
@@ -175,7 +187,7 @@ class Ui_Settings(object):
     def retranslateUi(self, Settings):
         _translate = QtCore.QCoreApplication.translate
         Settings.setWindowTitle(_translate("Settings", "Form"))
-        self.btn_back.setText(_translate("Settings", "Back"))
+        self.btnBack.setText(_translate("Settings", "Back"))
         self.lblHead.setText(_translate("Settings", "Settings"))
         self.label.setText(_translate("Settings", "url:"))
         self.btnAdd_url.setText(_translate("Settings", "Add"))
@@ -188,12 +200,14 @@ class Ui_Settings(object):
         self.btnRemove_app.setText(_translate("Settings", "Remove"))
         self.lbl_app.setText(_translate("Settings", "Programs"))
         self.btnHelp.setText(_translate("Settings", "Help"))
-    
+        self.btnDelete.setText(_translate("Settings", "Delete"))
+
     def setupSignals(self):
+
         # setup the cmbx, lstWeb and lstApp
-        self.cmbxApp.addItems(self.apps)
-        self.lstApp.addItems(self.app_lst)
-        self.lstWeb.addItems(self.webs)
+        self.cmbxApp.addItems([record.name for record in self.apps])
+        self.lstApp.addItems([record.name for record in self.app_lst])
+        self.lstWeb.addItems([record.name for record in self.webs])
 
         # Disable remove buttons as they nothing is selected
         self.btnRemove_app.setEnabled(False)
@@ -218,101 +232,145 @@ class Ui_Settings(object):
         self.btnFind.clicked.connect(self.find_apps)
 
     def show_help(self):
+
         mssg = QMessageBox()
         mssg.setWindowTitle('How to add Applicatons')
-        mssg.setText('Click on find to look for applications in your systems to add to list of available application option')
+        mssg.setText('Click on "Find" to look for executables applications and add them to the list of available applications')
         mssg.setIcon(QMessageBox.Information)
         mssg.setStandardButtons(QMessageBox.Ok)
 
         value = mssg.exec_() 
 
     def Add_url(self):
+        # 1 Get the text from the edtUrl
+        # 2 Clear both edt and the listWeb
+        # 3 Check if url is not already in the database
+        # 4 Insert the name of the url into lstWeb
+
         url = self.edtUrl.text()
         self.edtUrl.clear()
         self.lstWeb.clear()
-        self.webs.append(url)
-        self.lstWeb.addItems(self.webs)
+
+        record = controller.TbWebApps.insert_web(url)
+        controller.TbWorkAppSite.insert_rec(self.workspace.id, record.AppsiteID)
+        self.webs = controller.TbWorkAppSite.get_webs(self.workspace.id)
+        self.lstWeb.addItems([query.name for query in self.webs])
 
     def Add_app(self):
-        if self.cmbxApp.count():
-            app = self.cmbxApp.currentText()
-            self.apps.remove(app)
-            self.cmbxApp.clear()
-            self.cmbxApp.addItems(self.apps)
 
-            self.app_lst.append(app)
-            self.lstApp.addItem(app)
+        if self.cmbxApp.count():
+            
+            app = self.cmbxApp.currentText()
+
+            for record in self.apps:
+                
+                if record.name == app:
+                    
+                    controller.TbWorkAppSite.insert_rec(self.workspace.id, str(record.AppsiteID))
+                    self.apps.remove(record)
+                    self.cmbxApp.clear()
+                    self.cmbxApp.addItems([record.name for record in self.apps])
+                    self.app_lst = controller.TbWorkAppSite.get_apps(self.workspace.id)
+                    self.lstApp.addItem(app)
     
     def remove_url(self):
-        self.webs = []
-        for i in range(self.lstWeb.count()):
-            li = self.lstWeb.item(i)
-            if not(li.isSelected()):
-                self.webs.append(li.text())
 
-        self.lstWeb.clear()
-        self.lstWeb.addItems(self.webs)
+        #  1) Get the selected url
+        #  2) Get its query record in self.webs and obtain its primary key
+        #  3) Use the primary key to delete it from the TbWorkAppsite
+        #  4) Refresh lstWeb
+        for i in range(self.lstWeb.count()):
+            
+            li = self.lstWeb.item(i)
+            
+            if li.isSelected():
+                
+                for query in self.webs:
+
+                    if query.name == li.text():
+
+                        controller.TbWorkAppSite.del_record(query.id)
+
+                        self.webs = controller.TbWorkAppSite.get_webs(self.workspace.id)
+                        self.lstWeb.clear()
+                        self.lstWeb.addItems([query.name for query in self.webs])
 
     def remove_app(self):
+        
         for i in range(self.lstApp.count()):
+            
             li = self.lstApp.item(i)
 
             if li.isSelected():
+
                 app = li.text()
-                self.cmbxApp.addItem(app)
-                self.apps.append(app)
-                self.app_lst.remove(app)
+                
+                for query in self.app_lst:
+                    
+                    if query.name == app:
+
+                        controller.TbWorkAppSite.del_record(str(query.id))
+                        self.app_lst.remove(query)
+                        self.apps.append(query.get_record())
+                        self.cmbxApp.addItem(app)
 
         self.lstApp.clear()
-        self.lstApp.addItems(self.app_lst)
+        self.lstApp.addItems([query.name for query in self.app_lst])
 
     def find_apps(self):
+        
         filename = QFileDialog.getOpenFileName(self.main_frm, 'Select executable File', '/', 'executables(*.exe)')[0]
         
         # Don't add exetubles that already exists between the two lists
         if not((filename in self.apps) or (filename in self.app_lst)):
-            self.apps.append(filename)
-            self.cmbxApp.addItems(self.apps) 
-            App.save_file('exe.txt', self.apps)
+            
+            new_record = controller.TbWebApps.insert_app(filename)
+            print(new_record.name)
+            self.apps.append(new_record)
+            self.cmbxApp.addItem(self.apps[-1].name)
 
         else:
             pass
             # A pop notification to say that the app is already available in the combox
 
-
 class App_Form(QWidget):
-    def __init__(self, text):
+    
+    def __init__(self):
+        
         super().__init__()
         self.ui = Ui_Settings()
-        self.btn_back = self.ui.setupUi(self)
-        self.fn_pack = []
+        self.btnBack, self.btnDelete = self.ui.setupUi(self)
+        self.fn_pack = None
+        self.record = controller.TbWorkspace.get_active_workspace()
 
     def set_fn_pack(self,fn_pack):
+        
         self.fn_pack = fn_pack
-        self.btn_back.clicked.connect(self.closeEvent)
+        self.btnBack.clicked.connect(self.fn_pack.render_workspace)
+        self.btnDelete.clicked.connect(self.delete_workspace)
 
-    def closeEvent(self, event):
+    def delete_workspace(self):
+        
+        mssg = QMessageBox()
+        mssg.setWindowTitle('Delete Workspace')
+        mssg.setText('Are you sure you want delete this workspace. You cannot undo these changes')
+        mssg.setIcon(QMessageBox.Warning)
+        mssg.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
 
-        self.save_and_exit()
+        value = mssg.exec_()
 
-        if event:
-            event.accept()
-        else:
-            self.fn_pack.render_workspace()
-
-    def save_and_exit(self):
-        # all the save code
-        apps, app_lst = self.ui.get_Applications()
-        webs = self.ui.get_Websites()
-
-        App.save_file('exe.txt', apps)
-        App.save_file('apps.txt', app_lst)
-        App.save_file('websites.txt', webs)
+        if (value == QMessageBox.Yes):
+            
+            record = controller.TbWorkspace.get_active_workspace()
+            controller.TbWorkspace.del_workspace(record.id)
+            os.startfile(App.py)
+            sys.exit()
 
 if __name__ == "__main__":
+    
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    settings = App_Form('Todo. Implement settings for multiple workspaces')
-    settings.set_fn_pack('psych')
+    settings = App_Form()
+    # settings.set_fn_pack()
     settings.show()
     sys.exit(app.exec_())

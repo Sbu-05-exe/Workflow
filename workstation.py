@@ -6,14 +6,34 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-import App, webbrowser
+import webbrowser
+import controller 
 from os import startfile
-from webbrowser import Mozilla, Chrome
 from PyQt5 import QtCore, QtGui, QtWidgets
+from webbrowser import Mozilla, Chrome
 from PyQt5.QtWidgets import QWidget
+'''
+============================================================================================
+                                Registering Firefox
+============================================================================================
+
+'''
+
+# This code registers firefox as the default browser. Change this if youre a chrome guy or whatever
+firefox = Mozilla('mozilla')
+webbrowser.register('firefox', Mozilla, firefox, True)
+
+'''
+============================================================================================
+                            QT DESIGNER UI FILE
+============================================================================================
+'''
 
 class Ui_Workstation(object):
+    
     def setupUi(self, Workstation, text='Heading'):
+        self.workspace = None
+
         Workstation.setObjectName("Workstation")
         Workstation.resize(784, 564)
         font = QtGui.QFont()
@@ -84,21 +104,11 @@ class Ui_Workstation(object):
         self.horizontalLayout.addWidget(self.main_frame)
 
         self.retranslateUi(Workstation, text)
+        self.setupSignals()
         self.ApplyFonts()
         QtCore.QMetaObject.connectSlotsByName(Workstation)
+        
         return self.btn_back, self.btn_settings
-
-    def get_Web_lst(self):
-        return self.lst_web
-
-    def get_App_lst(self):
-        return self.lst_app
-
-    def get_webs(self):
-        return [self.lst_web.item(i).text() for i in range(self.lst_web.count())]
-
-    def get_apps(self):
-        return [self.lst_app.item(i).text() for i in range(self.lst_app.count())]
 
     def retranslateUi(self, Workstation, text ='Heading'):
         _translate = QtCore.QCoreApplication.translate
@@ -110,7 +120,20 @@ class Ui_Workstation(object):
         self.lbl_web.setText(_translate("Workstation", "Websites"))
         self.btn_go_web.setText(_translate("Workstation", "Go"))
         self.lbl_head.setText(_translate("Workstation", text))
-        self.setupSignals()
+
+# The following methods are not provided by QtDesigner
+    def setupSignals(self):
+        self.btn_go_app.clicked.connect(self.open_apps)
+        self.btn_go_web.clicked.connect(self.surf_webs)
+
+    def get_Web_lst(self):
+        return self.lst_web
+
+    def get_App_lst(self):
+        return self.lst_app
+
+    def setWorkspace(self, active_workspace):
+        self.workspace = active_workspace
 
     def ApplyFonts(self):
         font = QtGui.QFont()
@@ -120,32 +143,45 @@ class Ui_Workstation(object):
         font.underline()
         self.lbl_head.setFont(font)
 
-    def setupSignals(self):
-        self.btn_go_app.clicked.connect(self.open_apps)
-        self.btn_go_web.clicked.connect(self.surf_webs)
-
     def open_apps(self):
+        
+        # Open all applications on the app list widget
 
-        applications = self.get_apps()
+        applications = controller.TbWorkAppSite.get_apps(self.workspace.id) 
 
-        for app in applications:
-            startfile(app)
+        for record in applications:
+            startfile(record.path)
 
     def surf_webs(self):
-        firefox = Mozilla('mozilla')
-        webbrowser.register('firefox', Mozilla, firefox, True)
 
-        websites = self.get_webs()
-        for url in websites:
-            webbrowser.open(url)
+        # Open all websites web list widget
+
+        websites = controller.TbWorkAppSite.get_webs(self.workspace.id)
+        
+        for record in websites:
+            webbrowser.open(record.path)
+            
+'''
+============================================================================================
+                                WORKSTATION FORM
+============================================================================================
+
+'''
+
+# This widget is created so that it can be exported and easily manipulated for external 
+# functions
 
 class App_Form(QWidget):
-    def __init__(self, text=''):
+    def __init__(self):
         super().__init__()
 
         self.fn_pack = None
         self.ui = Ui_Workstation()
-        self.btn_back, self.btn_settings = self.ui.setupUi(self, text)
+
+        self.workspace = controller.TbWorkspace.get_active_workspace()
+        self.btn_back, self.btn_settings = self.ui.setupUi(self, self.workspace.name)
+        self.ui.setWorkspace(self.workspace)
+
 
         self.app_lst= self.ui.get_App_lst()
         self.web_lst = self.ui.get_Web_lst()
@@ -153,13 +189,19 @@ class App_Form(QWidget):
     def display(self):
         self.app_lst.clear()
         self.web_lst.clear()
-        self.app_lst.addItems(App.check_file('apps.txt'))
-        self.web_lst.addItems(App.check_file('websites.txt'))
+
+        
+        self.app_lst.addItems(list(map(lambda record: record.name, controller.TbWorkAppSite.get_apps(self.workspace.id))))
+        self.web_lst.addItems(list(map(lambda record: record.name, controller.TbWorkAppSite.get_webs(self.workspace.id))))
 
     def set_fn_pack(self, fn_pack):
         self.fn_pack = fn_pack
         self.btn_back.clicked.connect(fn_pack.render_menu)
         self.btn_settings.clicked.connect(fn_pack.render_settings)
+
+    def back_to_menu(self):
+        controller.setActive(0)
+        self.fn_pack.render_menu()
 
 if __name__ == "__main__":
     import sys

@@ -1,9 +1,13 @@
 import sys
-from controller import get_workspaces, insert_new_workspace
+import controller
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSizePolicy
 from PyQt5.QtWidgets import QVBoxLayout, QGridLayout, QWidget, QLabel, QInputDialog
 
 # workspace = ['School','Coding','Blog','Project X']
+class Record():
+	def __init__(self, mylist):
+		self.pk = mylist[0]
+		self.name = mylist[1]
 
 class Button(QPushButton):
 	def __init__(self, text):
@@ -11,18 +15,28 @@ class Button(QPushButton):
 		self.text = text
 
 class MenuWidget(QWidget):
-	def __init__(self, parent_function=None):
+	def __init__(self, parent_fn=None):
 		super().__init__()
-		self.workspace = get_workspaces()
+		
+		self.workspace = controller.TbWorkspace.getTb()
 		self.layout = self.initUI()
-		self.render_workstation = parent_function
+		self.prep_widgets = parent_fn
 
 	def initUI(self):
 		vbox = QVBoxLayout()
 
-		for work in self.workspace:
-			self.Add_Workspace(work, vbox)
+		for record in self.workspace:
+			self.Add_Workspace(record.name, vbox)
 
+		btn_add = self.create_btn_add()
+		vbox.addWidget(btn_add)
+
+		self.setLayout(vbox)
+		self.setStyleSheet(open('app.css').read())
+
+		return vbox
+
+	def create_btn_add(self):
 		add_btn = QPushButton('+')
 		add_btn.setStyleSheet("""
 			QPushButton {
@@ -33,12 +47,9 @@ class MenuWidget(QWidget):
 			""")
 
 		add_btn.clicked.connect(self.addCategory)
-		vbox.addWidget(add_btn)
 
-		self.setLayout(vbox)
-		self.setStyleSheet(open('app.css').read())
+		return add_btn
 
-		return vbox
 
 	def Add_Workspace(self, text, layout):
 		btn = QPushButton(text)
@@ -47,28 +58,33 @@ class MenuWidget(QWidget):
 		layout.addWidget(btn)
 
 	def render_layout(self):
-		# Remove btn_Add
-		i = self.layout.count()
-		btn_add = self.layout.itemAt(i-1).widget()
-		btn_add.setParent(None)
+		for i in reversed(range(self.layout.count())):
+			# Remove all widgets
+			widget = self.layout.itemAt(i).widget()
+			widget.setParent(None)
 
-		# Add an additional workspace button
-		self.Add_Workspace(self.workspace[-1], self.layout)
+		for record in self.workspace:
+			self.Add_Workspace(record.name, self.layout)
 
-		# Readd btn_ad
+		btn_add = self.create_btn_add()
 		self.layout.addWidget(btn_add)
 
 	def buttonClicked(self):
 		sender = self.sender()
 		btn_text = sender.text()
-		self.render_workstation(btn_text)	
+
+		for record in self.workspace:
+			if record.name == btn_text:
+				if controller.TbWorkspace.set_active(record.id) == 'SUCCESSFUL':
+					self.prep_widgets()	
 
 	def addCategory(self):
 		text, ok = QInputDialog.getText(self,'Entry','Enter name of workspace: ',)
 		if (ok and text):
-			self.workspace.append(text)
+
 			# Update the database
-			insert_new_workspace(text)
+			controller.TbWorkspace.insert_new_workspace(text)
+			self.workspace = controller.TbWorkspace.getTb() 
 			self.render_layout()
 
 def main():
