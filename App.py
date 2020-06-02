@@ -1,48 +1,15 @@
 import PyQt5, sys, os # Python files
-import menu, settings, workstation # App Files
+import menu, settings, workstation, controller# App Files
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QSizePolicy
 from PyQt5.QtWidgets import QVBoxLayout, QGridLayout, QWidget, QLabel, QStackedWidget
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 
 '''
 ====================================================================================
 							Utility Functions and classes
 ====================================================================================
 '''
-def chop(s):
-	# retrieves the name of the file in a filedirectory
-	index = 0
-	while index >= 0:
-		index = s.find('/')
-		s = s[(index+1):]
-
-	return s
-
-
-def check_file(file_name):
-	# Returns a list delimeted by a ',' in a file
-	if os.path.isfile(file_name):
-		with open(file_name,'r') as f:
-			result = f.read().split(',')
-			# making sure to not return an empty string
-			return [item for item in result if item]
-
-	else:
-		return []
-
-def save_file(file_name, lst):
-	# Saving contents of an list to a file 
-	s = ','.join(lst)
-	with open(file_name, 'w') as f:
-		f.write(s)
-
-class file():
-	def __str__(self):
-		return self.directory
-
-	def __init__(self, filename):
-		self.directory = filename
-		self.name = chop(filename)
 
 class function_pack():
 	# I dont really need this class anymore but it does make my code more self_explanatory
@@ -68,51 +35,54 @@ class Window(QMainWindow):
 		super(Window,self).__init__(*args, **kwargs)
 		self.Stack = QStackedWidget()
 
-		menu_frm = menu.MenuWidget(self.prep_widgets)
-
-		self.menu_frm = menu_frm
+		self.menu_frm = menu.MenuWidget(self.prep_widgets)
 		self.workspace = None
 		self.settings = None
 
-		self.Stack.addWidget(menu_frm)
+		self.Stack.addWidget(self.menu_frm)
 
 		self.setCentralWidget(self.Stack)
 		self.render()
 		self.showMaximized()
+		icon = QIcon()
 
-	def prep_widgets(self, text):
-		workspace_widget = workstation.App_Form(text)
-		settings_widget = settings.App_Form(text)
+	def prep_widgets(self):
 
-		self.Stack.addWidget(workspace_widget)
-		self.Stack.addWidget(settings_widget)
+		self.workspace = workstation.App_Form()
+		self.settings = settings.App_Form()
+		self.Stack.addWidget(self.workspace)
+		self.Stack.addWidget(self.settings)
 
 		fn_pack = function_pack(self.render) 
 
-		workspace_widget.set_fn_pack(fn_pack)
-		settings_widget.set_fn_pack(fn_pack)
-
-		self.set_workspace(workspace_widget)
-		self.set_settings(settings_widget)
+		self.workspace.set_fn_pack(fn_pack)
+		self.settings.set_fn_pack(fn_pack)
 
 		fn_pack.render_workspace()
 
 	def render(self, i=0):
+
 		self.Stack.setCurrentIndex(i)
 
-		# if we are switching to the workspace
+		# if you switch to the workspace
 		# refresh the workspace widget
 		if i == 1:
 			self.workspace.display()
-
-
-
+		# if you switch back to the meny 
+		# refresh the menu widget
+		if i == 0:
+			# Except I don't know how to refresh the menu widget without taking it of the stack widget
+			controller.TbWorkspace.log_off()
+			# Need to refresh the workspaces, and settings
+			if (self.workspace or self.settings):
+				self.workspace.setParent(None)
+				self.settings.setParent(None)
 
 	def set_workspace(self, widget):	
 		self.workspace = widget
 
 	def set_settings(self, widget):
-		self.settings = settings
+		self.settings = widget
 
 def main():
 	myApp = QApplication(sys.argv)
