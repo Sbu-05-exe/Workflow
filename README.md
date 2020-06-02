@@ -8,7 +8,7 @@ A simple app to automate daily desktop tasks
 - PyQt5
 - Sys
 
-## Progress :heave_check_mark:
+## Progress :heavy_check_mark:
 
 - Created Boilerplate
 - Designed Ui with Qtdesigner 
