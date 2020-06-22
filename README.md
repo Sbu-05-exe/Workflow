@@ -23,6 +23,8 @@ A simple app to automate daily desktop tasks
 
 - Style up the GUI with Qcss
 - Test and Implement the delete button on settings widget
+- Design an Icon for application
+- Create executable file 
 
 # Pre-requisites
 
