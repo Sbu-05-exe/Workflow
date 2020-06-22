@@ -32,7 +32,6 @@ class MenuWidget(QWidget):
 		vbox.addWidget(btn_add)
 
 		self.setLayout(vbox)
-		self.setStyleSheet(open('app.css').read())
 
 		return vbox
 

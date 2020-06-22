@@ -44,7 +44,8 @@ class Window(QMainWindow):
 		self.setCentralWidget(self.Stack)
 		self.render()
 		self.showMaximized()
-		icon = QIcon()
+
+		self.setStyleSheet(open('app.css').read())	
 
 	def prep_widgets(self):
 
